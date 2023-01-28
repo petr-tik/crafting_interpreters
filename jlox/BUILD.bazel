@@ -1,6 +1,8 @@
-load("@rules_rust//rust:defs.bzl", "rust_binary")
+load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library")
 
-rust_binary(name="jlox-rs", srcs=["main.rs"], edition="2018")
+rust_library(name="jlox-lib", srcs=["lib/error.rs", "lib/lib.rs"], edition="2018")
+
+rust_binary(name="jlox-rs", srcs=["main.rs"], deps=[":jlox-lib"], edition="2018")
 
 sh_test(name="parser_error",
     size = "small",
