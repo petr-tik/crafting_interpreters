@@ -1,3 +1,10 @@
 load("@rules_rust//rust:defs.bzl", "rust_binary")
 
 rust_binary(name="jlox-rs", srcs=["main.rs"], edition="2018")
+
+sh_test(name="parser_error",
+    size = "small",
+    srcs = ["run_jlox.sh"],
+    data = [":jlox-rs"],
+    args = ["$(location :jlox-rs)"],
+)
