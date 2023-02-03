@@ -1,12 +1,16 @@
 load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library")
+load("//rules:jlox.bzl", "jlox_test")
 
-rust_library(name="jlox-lib", srcs=["lib/error.rs", "lib/lib.rs"], edition="2018")
+rust_library(name="jlox-lib",
+             srcs=["lib/error.rs", "lib/lib.rs"],
+             visibility = ["//rules:__pkg__"],
+             edition="2018")
 
 rust_binary(name="jlox-rs", srcs=["main.rs"], deps=[":jlox-lib"], edition="2018")
 
-sh_test(name="parser_error",
-    size = "small",
-    srcs = ["run_jlox.sh"],
-    data = [":jlox-rs"],
-    args = ["$(location :jlox-rs)"],
-)
+jlox_test(name="io_error",
+          expected_retcode=1)
+
+jlox_test(name="help_error",
+          cmdline_args=["--help"],
+          expected_retcode=64)
