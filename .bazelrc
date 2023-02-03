@@ -1,3 +1,5 @@
 build --repo_env=RULES_RUST_TOOLCHAIN_INCLUDE_RUSTC_SRCS=true
+build --repo_env=CC=clang-10
+build --repo_env=CXX=clang++-10
 
 test --test_output=errors

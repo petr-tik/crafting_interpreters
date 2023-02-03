@@ -2,12 +2,18 @@
 
 * Build
 
-With bazel 5.1.1 you should be able to "just build"
+With bazel 5.1.1 and clang-10 you should be able to "just build"
 
 #+begin_src bash
-CC=clang-10 CXX=clang++-10 bazel test //...
+bazel test //...
 #+end_src
 
 #+begin_src bash
-CC=clang-10 CXX=clang++-10 bazel run //jlox:jlox-rs
+bazel run //jlox:jlox-rs
+#+end_src
+
+** Fast feedback
+
+#+begin_src bash
+fd | entr bazel test //...
 #+end_src
