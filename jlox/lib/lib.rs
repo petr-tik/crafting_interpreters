@@ -1,7 +1,8 @@
 mod error;
+mod token;
 pub use crate::error::LoxError;
 
-fn run_file(nth: &String) -> Result<(), LoxError> {
+fn run_file(_nth: &String) -> Result<(), LoxError> {
     Err(LoxError::IoError)
 }
 
