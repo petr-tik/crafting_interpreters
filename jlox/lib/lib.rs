@@ -12,7 +12,10 @@ fn run(input: &str) -> Result<(), LoxError> {
 fn run_file(input: &String) -> Result<(), LoxError> {
     let path = Path::new(input);
     match path.is_file() && path.exists() {
-        true => run(input),
+        true => {
+            let content = std::fs::read_to_string(input)?;
+            run(&content)
+        }
         false => Err(LoxError::IoError),
     }
 }
