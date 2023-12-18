@@ -39,3 +39,9 @@ impl Error for LoxError {
         None
     }
 }
+
+impl From<std::io::Error> for LoxError {
+    fn from(value: std::io::Error) -> Self {
+        LoxError::IoError
+    }
+}

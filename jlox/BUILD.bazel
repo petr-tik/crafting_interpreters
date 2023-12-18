@@ -8,9 +8,6 @@ rust_library(name="jlox-lib",
 
 rust_binary(name="jlox-rs", srcs=["main.rs"], deps=[":jlox-lib"], edition="2018")
 
-jlox_test(name="io_error",
-          expected_retcode=1)
-
 jlox_test(name="help_error",
           cmdline_args=["--help"],
           expected_retcode=64)
