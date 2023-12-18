@@ -19,10 +19,10 @@ fn run_file(input: &String) -> Result<(), LoxError> {
 
 fn run_prompt() -> Result<(), LoxError> {
     let mut buffer = String::new();
-    while (true) {
+    loop {
         print!("> ");
         std::io::stdout().flush().unwrap();
-        std::io::stdin().read_line(&mut buffer);
+        std::io::stdin().read_line(&mut buffer)?;
         run(&buffer)?;
         buffer.clear();
     }
