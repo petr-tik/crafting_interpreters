@@ -1,13 +1,21 @@
 mod error;
 mod token;
 pub use crate::error::LoxError;
+use std::io::Write;
 
 fn run_file(_nth: &String) -> Result<(), LoxError> {
     Err(LoxError::IoError)
 }
 
 fn run_prompt() -> Result<(), LoxError> {
-    Ok(todo!())
+    let mut buffer = String::new();
+    while (true) {
+        print!("> ");
+        std::io::stdout().flush().unwrap();
+        std::io::stdin().read_line(&mut buffer);
+        buffer.clear();
+    }
+    Ok(())
 }
 
 pub fn main_impl() -> Result<(), LoxError> {
