@@ -1,10 +1,20 @@
 mod error;
 mod token;
 pub use crate::error::LoxError;
-use std::io::Write;
+use std::{io::Write, path::Path};
 
-fn run_file(_nth: &String) -> Result<(), LoxError> {
-    Err(LoxError::IoError)
+fn run(input: &str) -> Result<(), LoxError> {
+    let scanner = token::Scanner::new(input);
+    let tokens = scanner.tokens();
+    Ok(())
+}
+
+fn run_file(input: &String) -> Result<(), LoxError> {
+    let path = Path::new(input);
+    match path.is_file() && path.exists() {
+        true => run(input),
+        false => Err(LoxError::IoError),
+    }
 }
 
 fn run_prompt() -> Result<(), LoxError> {
@@ -13,6 +23,7 @@ fn run_prompt() -> Result<(), LoxError> {
         print!("> ");
         std::io::stdout().flush().unwrap();
         std::io::stdin().read_line(&mut buffer);
+        run(&buffer)?;
         buffer.clear();
     }
     Ok(())

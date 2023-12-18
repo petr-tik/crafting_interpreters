@@ -67,7 +67,7 @@ pub struct Token<'a> {
     loc: usize,
 }
 
-struct Scanner<'a> {
+pub struct Scanner<'a> {
     source: &'a str,
     start: usize,
     current: usize,
@@ -77,6 +77,15 @@ struct Scanner<'a> {
 impl<'a> Scanner<'a> {
     fn is_at_end(&self) -> bool {
         self.current > self.source.len()
+    }
+
+    pub fn new(input: &'a str) -> Self {
+        Scanner {
+            source: input,
+            start: 0,
+            current: 0,
+            line: 0,
+        }
     }
 
     pub fn tokens(mut self) -> Vec<Token<'a>> {
