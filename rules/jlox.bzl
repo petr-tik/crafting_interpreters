@@ -40,4 +40,5 @@ jlox_test = rule(
         ),
     },
     test = True,
+    doc="Test running the interpreter"
 )

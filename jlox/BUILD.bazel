@@ -10,4 +10,5 @@ rust_binary(name="jlox-rs", srcs=["main.rs"], deps=[":jlox-lib"], edition="2018"
 
 jlox_test(name="help_error",
           cmdline_args=["--help"],
+          size="small",
           expected_retcode=64)
