@@ -49,7 +49,7 @@ enum TokenType {
 pub struct Token<'a> {
     ty: TokenType,
     lexeme: &'a str,
-    loc: usize,
+    loc: u64,
 }
 
 pub struct Scanner<'a> {
@@ -75,13 +75,18 @@ impl<'a> Scanner<'a> {
 
     pub fn tokens(mut self) -> Vec<Token<'a>> {
         let mut tokens = vec![];
-        loop {
-            //     let t = self.scan_token();
-            //     tokens.push(t);
-            //     if t.ty == TokenType::EOF {
-            //         break;
-            //     }
+        while !self.is_at_end() {
+            // let t = self.scan_token();
+            // if t.ty == TokenType::EOF {
+            //     break;
+            // }
+            self.current += 1;
         }
+        tokens.push(Token {
+            ty: TokenType::EOF,
+            lexeme: "",
+            loc: self.line,
+        });
         tokens
     }
 }
