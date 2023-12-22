@@ -1,5 +1,6 @@
 #[derive(PartialEq)]
-enum SingleC {
+enum TokenType {
+    // Single character tokens
     LeftParen,
     RightParen,
     LeftBrace,
@@ -11,10 +12,7 @@ enum SingleC {
     Semicolon,
     Slash,
     Star,
-}
-
-#[derive(PartialEq)]
-enum NonSignleC {
+    // One or two character tokens
     Bang,
     BangEqual,
     Equal,
@@ -23,17 +21,11 @@ enum NonSignleC {
     GreaterEqual,
     Less,
     LessEqual,
-}
-
-#[derive(PartialEq)]
-enum Lit {
+    // Literals
     Identifier,
     String,
     Number,
-}
-
-#[derive(PartialEq)]
-enum KeyWord {
+    // Keywords
     And,
     Class,
     Else,
@@ -50,14 +42,7 @@ enum KeyWord {
     True,
     Var,
     While,
-}
-
-#[derive(PartialEq)]
-enum TokenType {
-    SingleChar(SingleC),
-    OneOrTwoChar(NonSignleC),
-    Literal(Lit),
-    Keyword(KeyWord),
+    // EOF
     EOF,
 }
 
