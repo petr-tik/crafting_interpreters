@@ -86,9 +86,14 @@ impl<'a> Scanner<'a> {
         while !self.is_at_end() {
             let t = self.scan_token().unwrap();
             if let Some(t) = t {
+                if let Some(lex) = &t.lexeme {
+                    match lex {
+                        Lexeme::Char(_) => self.current += 1,
+                        Lexeme::Substr(sub) => self.current += sub.len(),
+                    }
+                }
                 tokens.push(t);
             }
-            self.current += 1;
         }
         tokens.push(Token {
             ty: TokenType::EOF,
@@ -96,6 +101,14 @@ impl<'a> Scanner<'a> {
             loc: self.line,
         });
         tokens
+    }
+
+    fn next_match(&self, expected: char) -> bool {
+        if self.is_at_end() {
+            return false;
+        };
+        let c: char = char::from_str(&self.source[(self.current + 1)..(self.current + 2)]).unwrap();
+        c == expected
     }
 
     fn scan_token(&self) -> Result<Option<Token<'a>>, LoxError> {
@@ -106,6 +119,23 @@ impl<'a> Scanner<'a> {
                 lexeme: Some(Lexeme::Char(c)),
                 loc: self.line,
             })),
+            '!' => {
+                if self.next_match('=') {
+                    Ok(Some(Token {
+                        ty: TokenType::BangEqual,
+                        lexeme: Some(Lexeme::Substr(
+                            &self.source[self.current..(self.current + 2)],
+                        )),
+                        loc: self.line,
+                    }))
+                } else {
+                    Ok(Some(Token {
+                        ty: TokenType::Bang,
+                        lexeme: Some(Lexeme::Char(c)),
+                        loc: self.line,
+                    }))
+                }
+            }
             '\n' => Ok(None),
             _ => Err(LoxError::ParserError),
         }
