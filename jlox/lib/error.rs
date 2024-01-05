@@ -1,3 +1,4 @@
+use std::char::ParseCharError;
 use std::error::Error;
 use std::fmt::Display;
 use std::process::{self, ExitCode, Termination};
@@ -5,6 +6,8 @@ use std::process::{self, ExitCode, Termination};
 #[derive(Debug)]
 pub enum LoxError {
     IoError,
+    // TODO Print the substring that fails to parse
+    // by passing a payload on this variant
     ParserError,
     EvaluationError,
 }
@@ -43,5 +46,11 @@ impl Error for LoxError {
 impl From<std::io::Error> for LoxError {
     fn from(value: std::io::Error) -> Self {
         LoxError::IoError
+    }
+}
+
+impl From<ParseCharError> for LoxError {
+    fn from(value: ParseCharError) -> Self {
+        LoxError::ParserError
     }
 }

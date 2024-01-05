@@ -1,9 +1,11 @@
-load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library")
+load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library", "rust_test")
 load("//rules:jlox.bzl", "jlox_test")
 
 rust_library(name="jlox-lib",
              srcs=["lib/error.rs", "lib/lib.rs", "lib/token.rs"],
              edition="2018")
+
+rust_test(name="jlox-rs-test", srcs=["lib/test.rs"], deps=[":jlox-lib"], size="small", edition="2018")
 
 rust_binary(name="jlox-rs", srcs=["main.rs"], deps=[":jlox-lib"], edition="2018")
 

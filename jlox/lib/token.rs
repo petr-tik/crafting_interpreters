@@ -1,3 +1,6 @@
+use crate::LoxError;
+use std::str::FromStr;
+
 #[derive(PartialEq)]
 enum TokenType {
     // Single character tokens
@@ -66,7 +69,7 @@ pub struct Scanner<'a> {
 
 impl<'a> Scanner<'a> {
     fn is_at_end(&self) -> bool {
-        self.current > self.source.len()
+        self.current >= self.source.len()
     }
 
     pub fn new(input: &'a str) -> Self {
@@ -81,10 +84,10 @@ impl<'a> Scanner<'a> {
     pub fn tokens(mut self) -> Vec<Token<'a>> {
         let mut tokens = vec![];
         while !self.is_at_end() {
-            // let t = self.scan_token();
-            // if t.ty == TokenType::EOF {
-            //     break;
-            // }
+            let t = self.scan_token().unwrap();
+            if let Some(t) = t {
+                tokens.push(t);
+            }
             self.current += 1;
         }
         tokens.push(Token {
@@ -93,5 +96,18 @@ impl<'a> Scanner<'a> {
             loc: self.line,
         });
         tokens
+    }
+
+    fn scan_token(&self) -> Result<Option<Token<'a>>, LoxError> {
+        let c: char = char::from_str(&self.source[self.current..(self.current + 1)])?;
+        match c {
+            '(' => Ok(Some(Token {
+                ty: TokenType::LeftParen,
+                lexeme: Some(Lexeme::Char(c)),
+                loc: self.line,
+            })),
+            '\n' => Ok(None),
+            _ => Err(LoxError::ParserError),
+        }
     }
 }

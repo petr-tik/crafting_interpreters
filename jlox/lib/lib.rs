@@ -3,7 +3,7 @@ mod token;
 pub use crate::error::LoxError;
 use std::{io::Write, path::Path};
 
-fn run(input: &str) -> Result<(), LoxError> {
+pub fn run(input: &str) -> Result<(), LoxError> {
     let scanner = token::Scanner::new(input);
     let tokens = scanner.tokens();
     Ok(())
