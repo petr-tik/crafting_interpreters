@@ -46,9 +46,14 @@ enum TokenType {
     EOF,
 }
 
+pub enum Lexeme<'a> {
+    Char(char),
+    Substr(&'a str),
+}
+
 pub struct Token<'a> {
     ty: TokenType,
-    lexeme: &'a str,
+    lexeme: Option<Lexeme<'a>>,
     loc: u64,
 }
 
@@ -84,7 +89,7 @@ impl<'a> Scanner<'a> {
         }
         tokens.push(Token {
             ty: TokenType::EOF,
-            lexeme: "",
+            lexeme: None,
             loc: self.line,
         });
         tokens
