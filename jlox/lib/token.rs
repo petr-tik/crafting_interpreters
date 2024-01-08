@@ -1,5 +1,6 @@
 use crate::LoxError;
-use std::str::FromStr;
+use std::iter::Peekable;
+use std::str::Chars;
 
 #[derive(PartialEq)]
 enum TokenType {
@@ -59,22 +60,19 @@ pub struct Token<'a> {
     lexeme: Option<Lexeme<'a>>,
     loc: u64,
 }
+type CharIter<'a> = Peekable<Chars<'a>>;
 
 pub struct Scanner<'a> {
-    source: &'a str,
+    source: CharIter<'a>,
     start: usize,
     current: usize,
     line: u64,
 }
 
 impl<'a> Scanner<'a> {
-    fn is_at_end(&self) -> bool {
-        self.current >= self.source.len()
-    }
-
     pub fn new(input: &'a str) -> Self {
         Scanner {
-            source: input,
+            source: input.chars().peekable(),
             start: 0,
             current: 0,
             line: 0,
@@ -83,17 +81,95 @@ impl<'a> Scanner<'a> {
 
     pub fn tokens(mut self) -> Vec<Token<'a>> {
         let mut tokens = vec![];
-        while !self.is_at_end() {
-            let t = self.scan_token().unwrap();
-            if let Some(t) = t {
-                if let Some(lex) = &t.lexeme {
-                    match lex {
-                        Lexeme::Char(_) => self.current += 1,
-                        Lexeme::Substr(sub) => self.current += sub.len(),
+        while let Some(c) = self.source.next() {
+            let t = match c {
+                // Single character tokens
+                '(' => Token {
+                    ty: TokenType::LeftParen,
+                    lexeme: Some(Lexeme::Char(c)),
+                    loc: self.line,
+                },
+                ')' => Token {
+                    ty: TokenType::RightParen,
+                    lexeme: Some(Lexeme::Char(c)),
+                    loc: self.line,
+                },
+                '{' => Token {
+                    ty: TokenType::LeftBrace,
+                    lexeme: Some(Lexeme::Char(c)),
+                    loc: self.line,
+                },
+                '}' => Token {
+                    ty: TokenType::RightBrace,
+                    lexeme: Some(Lexeme::Char(c)),
+                    loc: self.line,
+                },
+                ',' => Token {
+                    ty: TokenType::Comma,
+                    lexeme: Some(Lexeme::Char(c)),
+                    loc: self.line,
+                },
+                '.' => Token {
+                    ty: TokenType::Dot,
+                    lexeme: Some(Lexeme::Char(c)),
+                    loc: self.line,
+                },
+                '+' => Token {
+                    ty: TokenType::Plus,
+                    lexeme: Some(Lexeme::Char(c)),
+                    loc: self.line,
+                },
+                '-' => Token {
+                    ty: TokenType::Minus,
+                    lexeme: Some(Lexeme::Char(c)),
+                    loc: self.line,
+                },
+                ';' => Token {
+                    ty: TokenType::Semicolon,
+                    lexeme: Some(Lexeme::Char(c)),
+                    loc: self.line,
+                },
+                '*' => Token {
+                    ty: TokenType::Star,
+                    lexeme: Some(Lexeme::Char(c)),
+                    loc: self.line,
+                },
+
+                // Multi-character tokens i.e. operators
+                '!' => {
+                    if let Some('=') = self.source.next_if_eq(&'=') {
+                        Token {
+                            ty: TokenType::BangEqual,
+                            lexeme: Some(Lexeme::Substr(&"!=")),
+                            loc: self.line,
+                        }
+                    } else {
+                        Token {
+                            ty: TokenType::Bang,
+                            lexeme: Some(Lexeme::Char(c)),
+                            loc: self.line,
+                        }
                     }
                 }
-                tokens.push(t);
-            }
+                '=' => {
+                    if let Some('=') = self.source.next_if_eq(&'=') {
+                        Token {
+                            ty: TokenType::EqualEqual,
+                            lexeme: Some(Lexeme::Substr(&"==")),
+                            loc: self.line,
+                        }
+                    } else {
+                        Token {
+                            ty: TokenType::Equal,
+                            lexeme: Some(Lexeme::Char(c)),
+                            loc: self.line,
+                        }
+                    }
+                }
+
+                _ => todo!("Return a ParserError type"),
+            };
+            tokens.push(t);
         }
         tokens.push(Token {
             ty: TokenType::EOF,
@@ -101,43 +177,5 @@ impl<'a> Scanner<'a> {
             loc: self.line,
         });
         tokens
-    }
-
-    fn next_match(&self, expected: char) -> bool {
-        if self.is_at_end() {
-            return false;
-        };
-        let c: char = char::from_str(&self.source[(self.current + 1)..(self.current + 2)]).unwrap();
-        c == expected
-    }
-
-    fn scan_token(&self) -> Result<Option<Token<'a>>, LoxError> {
-        let c: char = char::from_str(&self.source[self.current..(self.current + 1)])?;
-        match c {
-            '(' => Ok(Some(Token {
-                ty: TokenType::LeftParen,
-                lexeme: Some(Lexeme::Char(c)),
-                loc: self.line,
-            })),
-            '!' => {
-                if self.next_match('=') {
-                    Ok(Some(Token {
-                        ty: TokenType::BangEqual,
-                        lexeme: Some(Lexeme::Substr(
-                            &self.source[self.current..(self.current + 2)],
-                        )),
-                        loc: self.line,
-                    }))
-                } else {
-                    Ok(Some(Token {
-                        ty: TokenType::Bang,
-                        lexeme: Some(Lexeme::Char(c)),
-                        loc: self.line,
-                    }))
-                }
-            }
-            '\n' => Ok(None),
-            _ => Err(LoxError::ParserError),
-        }
     }
 }

@@ -2,6 +2,7 @@ mod error;
 mod token;
 pub use crate::error::LoxError;
 use std::{io::Write, path::Path};
+pub use token::Scanner;
 
 pub fn run(input: &str) -> Result<(), LoxError> {
     let scanner = token::Scanner::new(input);
