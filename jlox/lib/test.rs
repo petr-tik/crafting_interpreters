@@ -13,3 +13,11 @@ fn check_scanner() {
     let tokens = scanner.tokens();
     assert_eq!(tokens.len(), 8);
 }
+
+#[test]
+#[should_panic(expected = "Failed to parse some tokens")]
+fn throws_on_illegal_inputs() {
+    let input = "((()🦰";
+    let scanner = Scanner::new(input);
+    let tokens = scanner.tokens();
+}
