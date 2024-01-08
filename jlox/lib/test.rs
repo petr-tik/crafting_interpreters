@@ -15,6 +15,16 @@ fn check_scanner() {
 }
 
 #[test]
+fn check_multiline_input() {
+    let input = "// this is a comment
+(( )){} // grouping stuff
+!*+-/=<> <= == // operators";
+    let scanner = Scanner::new(input);
+    let tokens = scanner.tokens();
+    assert_eq!(tokens.len(), 5);
+}
+
+#[test]
 #[should_panic(expected = "Failed to parse some tokens")]
 fn throws_on_illegal_inputs() {
     let input = "((()🦰";
