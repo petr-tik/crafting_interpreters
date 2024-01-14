@@ -1,5 +1,5 @@
 load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library", "rust_test")
-load("//rules:jlox.bzl", "jlox_test")
+load("//rules:jlox.bzl", "jlox_test", "parallel_executable_test")
 
 rust_library(name="jlox-lib",
              srcs=["lib/error.rs", "lib/lib.rs", "lib/token.rs"],
@@ -13,3 +13,13 @@ jlox_test(name="help_error",
           cmdline_args=["--help"],
           size="small",
           expected_retcode=64)
+
+jlox_test(name="mini", cmdline_args=["@bobs_test_suite//:test/precedence.lox"], size="small")
+
+
+print(glob(["bobs_test_suite/test/**"]))
+
+# parallel_executable_test(name="integration_test",
+#                          lox_inputs=
+#                             glob(["@bobs_test_suite:*"],
+#                                  allow_empty=True))

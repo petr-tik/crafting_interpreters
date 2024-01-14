@@ -42,3 +42,38 @@ jlox_test = rule(
     test = True,
     doc="Test running the interpreter"
 )
+
+
+def _parallel_executable_test_impl(ctx):
+    # Shard the input files based on the test sharding parameters
+    jlox_executable = Label("//jlox:jlox-rs")
+    shard_count = ctx.attr.shard_count
+    inputs_per_shard = len(ctx.attr.lox_inputs) // shard_count
+
+    # Generate a list of actions for the files in the current shard
+    actions = []
+    for input_file in ctx.attr.lox_inputs[0:5]:
+        action_name = "{}_{}".format(jlox_executable, input_file)
+        output_file = "{}_output.txt".format(action_name)
+        command = "./{} {} > {}".format(jlox_executable, input_file, output_file)
+        action = ctx.actions.declare_file(
+            action_name,
+            inputs = ctx.files.lox_inputs,
+            outputs = [output_file],
+            command = command,
+        )
+        actions.append(action)
+
+    # Run all actions in parallel
+    ctx.actions.run()
+
+# Bazel _test rule for parallel execution of an executable with sharded input files
+parallel_executable_test = rule(
+    implementation = _parallel_executable_test_impl,
+    attrs = {
+        "lox_inputs": attr.label_list(default=[],
+                                      allow_files=True,
+                                      allow_empty=True)
+    },
+    test = True,
+)
