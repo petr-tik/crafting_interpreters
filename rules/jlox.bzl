@@ -45,35 +45,51 @@ jlox_test = rule(
 
 
 def _parallel_executable_test_impl(ctx):
-    # Shard the input files based on the test sharding parameters
+    # TODO make jlox interpreter run across all files
+    # TODO parallelise the run
     jlox_executable = Label("//jlox:jlox-rs")
-    shard_count = ctx.attr.shard_count
-    inputs_per_shard = len(ctx.attr.lox_inputs) // shard_count
+    script = """
+#!/usr/bin/env bash
+{command} {cmdline_args}
+if [ $? -eq 0 ]; then
+    exit 0
+else
+    echo "Got the wrong return code"
+    exit 1
+fi
+"""
+    files_depset = ctx.attr.lox_inputs[0]
 
-    # Generate a list of actions for the files in the current shard
-    actions = []
-    for input_file in ctx.attr.lox_inputs[0:5]:
-        action_name = "{}_{}".format(jlox_executable, input_file)
-        output_file = "{}_output.txt".format(action_name)
-        command = "./{} {} > {}".format(jlox_executable, input_file, output_file)
-        action = ctx.actions.declare_file(
-            action_name,
-            inputs = ctx.files.lox_inputs,
-            outputs = [output_file],
-            command = command,
+    # Iterate over the depset
+    res = []
+    for inp in files_depset.files.to_list():
+        # print(inp)
+        named_scr = script.format(
+            command = jlox_executable,
+            cmdline_args = inp
         )
-        actions.append(action)
 
-    # Run all actions in parallel
-    ctx.actions.run()
+        ctx.actions.write(output = ctx.outputs.executable, content = named_scr)
+
+        runfiles = ctx.runfiles(files = [ctx.executable._jlox])
+        # res.append(DefaultInfo(runfiles = runfiles))
+    return res
+
 
 # Bazel _test rule for parallel execution of an executable with sharded input files
 parallel_executable_test = rule(
     implementation = _parallel_executable_test_impl,
     attrs = {
-        "lox_inputs": attr.label_list(default=[],
+        "lox_inputs": attr.label_list(default=["@bobs_test_suite//:exported_testdata"],
                                       allow_files=True,
-                                      allow_empty=True)
+                                      allow_empty=False),
+        "_jlox": attr.label(
+            default = Label("//jlox:jlox-rs"),
+            allow_single_file = True,
+            executable = True,
+            cfg = "exec",
+        ),
+
     },
     test = True,
 )

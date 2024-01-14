@@ -40,8 +40,16 @@ http_archive(
         "https://github.com/munificent/craftinginterpreters/archive/01e6f5b8f3e5dfa65674c2f9cf4700d73ab41cf8.zip"
     ],
     strip_prefix = "craftinginterpreters-01e6f5b8f3e5dfa65674c2f9cf4700d73ab41cf8",
-    build_file_content ="""exports_files(glob(["test/**/*.lox"]), visibility=["//rules:__pkg__", "//jlox:__pkg__"])""",
+    build_file_content ="""
+filegroup(
+    name = "exported_testdata",
+    srcs = glob(["test/**/*.lox"]),
+    # TODO restrict visibility only to rules/ where the parallel test runner should be defined
+    visibility = ["//visibility:public"]
 )
+""",
+)
+
 
 load("@rules_rust//rust:repositories.bzl", "rules_rust_dependencies", "rust_register_toolchains")
 load("@rules_rust//tools/rust_analyzer:deps.bzl", "rust_analyzer_dependencies")
