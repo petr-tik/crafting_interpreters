@@ -31,8 +31,8 @@ bazel_skylib_workspace()
 
 http_archive(
     name = "rules_rust",
-    sha256 = "48e715be2368d79bc174efdb12f34acfc89abd7ebfcbffbc02568fcb9ad91536",
-    urls = ["https://github.com/bazelbuild/rules_rust/releases/download/0.24.0/rules_rust-v0.24.0.tar.gz"],
+    sha256 = "a761d54e49db06f863468e6bba4a13252b1bd499e8f706da65e279b3bcbc5c52",
+    urls = ["https://github.com/bazelbuild/rules_rust/releases/download/0.36.2/rules_rust-v0.36.2.tar.gz"],
 )
 
 load("@rules_rust//rust:repositories.bzl", "rules_rust_dependencies", "rust_register_toolchains")
@@ -40,6 +40,11 @@ load("@rules_rust//tools/rust_analyzer:deps.bzl", "rust_analyzer_dependencies")
 
 rules_rust_dependencies()
 
-rust_register_toolchains()
+rust_register_toolchains(
+    edition = "2021",
+    versions = [
+        "1.75.0"
+    ],
+)
 
 rust_analyzer_dependencies()
