@@ -1,4 +1,5 @@
 use crate::LoxError;
+use crate::error::LexError;
 use std::iter::Peekable;
 use std::str::Chars;
 
@@ -219,7 +220,8 @@ impl<'a> Scanner<'a> {
                     None
                 }
                 _ => {
-                    errors.push(LoxError::ParserError);
+                    let lex_err = LexError {error_c : c, line : self.line};
+                    errors.push(LoxError::LexerError(lex_err));
                     None
                 }
             };
@@ -233,6 +235,7 @@ impl<'a> Scanner<'a> {
             loc: self.line,
         });
         // TODO come up with an error handling strategy
+        dbg!(&errors);
         assert!(errors.is_empty(), "Failed to parse some tokens");
         tokens
     }

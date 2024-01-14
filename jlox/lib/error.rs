@@ -4,8 +4,15 @@ use std::fmt::Display;
 use std::process::{self, ExitCode, Termination};
 
 #[derive(Debug)]
+pub struct LexError {
+    pub error_c: char,
+    pub line: u64,
+}
+
+#[derive(Debug)]
 pub enum LoxError {
     IoError,
+    LexerError(LexError),
     // TODO Print the substring that fails to parse
     // by passing a payload on this variant
     ParserError,
@@ -33,6 +40,7 @@ impl Termination for LoxError {
                 println!("Couldn't evaluate your program");
                 return ExitCode::from(3);
             }
+            LoxError::LexerError(_le) => return ExitCode::from(4),
         }
     }
 }
