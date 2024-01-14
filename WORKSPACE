@@ -33,6 +33,16 @@ http_archive(
     urls = ["https://github.com/bazelbuild/rules_rust/releases/download/0.36.2/rules_rust-v0.36.2.tar.gz"],
 )
 
+http_archive(
+    name = "bobs_test_suite",
+    sha256 = "aea5c365255be196b8f0719820bd5a93f4d21f9f2e17d78de9419d0e6815fa96",
+    urls = [
+        "https://github.com/munificent/craftinginterpreters/archive/01e6f5b8f3e5dfa65674c2f9cf4700d73ab41cf8.zip"
+    ],
+    strip_prefix = "craftinginterpreters-01e6f5b8f3e5dfa65674c2f9cf4700d73ab41cf8",
+    build_file_content ="""exports_files(glob(["test/**/*.lox"]), visibility=["//rules:__pkg__", "//jlox:__pkg__"])""",
+)
+
 load("@rules_rust//rust:repositories.bzl", "rules_rust_dependencies", "rust_register_toolchains")
 load("@rules_rust//tools/rust_analyzer:deps.bzl", "rust_analyzer_dependencies")
 
