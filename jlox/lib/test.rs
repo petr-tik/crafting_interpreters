@@ -17,8 +17,8 @@ fn check_scanner() {
 #[test]
 fn check_multiline_input() {
     let input = "// this is a comment
-(( )){} // grouping stuff
-!*+-/=<> <= == // operators";
+(( )){} // comment about grouping tokens
+!*+-/=<> <= == // comment about operators";
     let scanner = Scanner::new(input);
     let tokens = scanner.tokens();
     assert_eq!(tokens.len(), 5);
@@ -29,5 +29,5 @@ fn check_multiline_input() {
 fn throws_on_illegal_inputs() {
     let input = "((()🦰";
     let scanner = Scanner::new(input);
-    let tokens = scanner.tokens();
+    scanner.tokens();
 }
